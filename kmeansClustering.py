@@ -124,7 +124,6 @@ if __name__ == '__main__':
 
         # make sure each centroid has at least one point within its cluster
         verification = verify_centroids(list_of_centroids)
-        print("does every centroid have a point?: " + str(verification))
         # if there's a point in each cluster, leave the loop
         if verification:
             keep_looping = False
@@ -154,4 +153,3 @@ if __name__ == '__main__':
         print(centroid.points)
     # plot the final graph
     plot_final_results(list_of_centroids)
-   
