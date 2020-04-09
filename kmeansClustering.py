@@ -1,4 +1,5 @@
 import copy
+import groupSeparation
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -93,6 +94,10 @@ def plot_final_results(centroids):
     # define the matplotlib properties
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
+    ax.set_xlabel('"Yes" Responses')
+    ax.set_ylabel('"No" Responses')
+    ax.set_zlabel('"Undecided" Responses')
+
     plt.figure(figsize=(5, 5))
     for i in range(0, len(centroids)):
         ax.scatter(centroids[i].get_xs(), centroids[i].get_ys(), centroids[i].get_zs(), color=centroids[i].colour)
@@ -103,11 +108,11 @@ def plot_final_results(centroids):
 
 if __name__ == '__main__':
     np.random.seed(200)
+    group_object = groupSeparation.Groups("G1.csv", "G2.csv", "G3.csv", "G4.csv")
 
-    # take in the data
-    x_values = [12, 20, 28, 18, 29, 33, 24, 45, 45, 52, 51, 52, 55, 53, 55, 61, 64, 69, 72]
-    y_values = [39, 36, 30, 52, 54, 46, 55, 59, 63, 70, 66, 63, 58, 23, 14, 8, 19, 7, 24]
-    z_values = [40, 15, 11, 53, 12, 4, 99, 75, 33, 81, 66, 45, 15, 19, 83, 91, 100, 4, 34]
+    x_values = group_object.final_x
+    y_values = group_object.final_y
+    z_values = group_object.final_z
 
 
     # initialize all of the elements
@@ -149,3 +154,4 @@ if __name__ == '__main__':
         print(centroid.points)
     # plot the final graph
     plot_final_results(list_of_centroids)
+   
