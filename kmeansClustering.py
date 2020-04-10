@@ -172,10 +172,10 @@ if __name__ == '__main__':
                     list_of_centroids[i].g4_matches = list_of_centroids[i].g4_matches + 1
 
     for centroid in list_of_centroids:
-        print("new centroid")
+        print(centroid.colour)
         print("G1: " + str(centroid.g1_matches))
         print("G2: " + str(centroid.g2_matches))
         print("G3: " + str(centroid.g3_matches))
         print("G4: " + str(centroid.g4_matches))
     # plot the final graph
-    # plot_final_results(list_of_centroids)
+    plot_final_results(list_of_centroids)
