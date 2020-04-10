@@ -13,6 +13,10 @@ class Centroid:
         self.z = np.random.randint(0, 100)
         self.colour = colour
         self.points = []
+        self.g1_matches = 0
+        self.g2_matches = 0
+        self.g3_matches = 0
+        self.g4_matches = 0
 
     def add_point(self, x, y, z):
         self.points.append([x, y, z])
@@ -77,6 +81,7 @@ def find_closest_centroid(x, y, z, centroids):
                 smallest_euclidean_distance = euclidean_distance
                 chosen_centroid = j
         # add this value to the centroid's cluster
+        # print("Chosen centroid: " + str(chosen_centroid))
         centroids[chosen_centroid].add_point(x[i], y[i], z[i])
     return centroids
 
@@ -130,7 +135,7 @@ if __name__ == '__main__':
 
     finding_optimal_centroids = True
     while finding_optimal_centroids:
-        print("new loop")
+        # print("new loop")
         # log centroid results
         old_centroids = copy.deepcopy(list_of_centroids)
         # update the centroid to the mean of the cluster
@@ -149,7 +154,28 @@ if __name__ == '__main__':
 
         # recalculate which points belong to which cluster
         list_of_centroids = find_closest_centroid(x_values, y_values, z_values, list_of_centroids)
+        # print("the # of points in the first centroid : " + str(len(list_of_centroids[1].points)))
+
+    for i in range(0, len(list_of_centroids)):
+        print(len(list_of_centroids[i].points))
+        print(list_of_centroids[i].points)
+        for j in range(0, len(list_of_centroids[i].points)):
+            # compare point against the 4 data sets, check for a match, add to tally
+            for k in range(0, len(group_object.g1_data)):
+                if list_of_centroids[i].points[j] == group_object.g1_data[k]:
+                    list_of_centroids[i].g1_matches = list_of_centroids[i].g1_matches + 1
+                if list_of_centroids[i].points[j] == group_object.g2_data[k]:
+                    list_of_centroids[i].g2_matches = list_of_centroids[i].g2_matches + 1
+                if list_of_centroids[i].points[j] == group_object.g3_data[k]:
+                    list_of_centroids[i].g3_matches = list_of_centroids[i].g3_matches + 1
+                if list_of_centroids[i].points[j] == group_object.g4_data[k]:
+                    list_of_centroids[i].g4_matches = list_of_centroids[i].g4_matches + 1
+
     for centroid in list_of_centroids:
-        print(centroid.points)
+        print("new centroid")
+        print("G1: " + str(centroid.g1_matches))
+        print("G2: " + str(centroid.g2_matches))
+        print("G3: " + str(centroid.g3_matches))
+        print("G4: " + str(centroid.g4_matches))
     # plot the final graph
-    plot_final_results(list_of_centroids)
+    # plot_final_results(list_of_centroids)
