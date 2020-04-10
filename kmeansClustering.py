@@ -18,8 +18,10 @@ class Centroid:
         self.g3_matches = 0
         self.g4_matches = 0
 
-    def add_point(self, x, y, z):
-        self.points.append([x, y, z])
+    # def add_point(self, x, y, z):
+    #     self.points.append([x, y, z])
+    def add_point(self, x, y, z, group):
+        self.points.append([x, y, z, group])
 
     def update_centroid(self):
         xs = self.get_xs()
@@ -38,7 +40,6 @@ class Centroid:
             temp_array.append(self.points[i][0])
         return temp_array
 
-
     def get_ys(self):
         temp_array = []
         for i in range(0, len(self.points)):
@@ -51,7 +52,15 @@ class Centroid:
             temp_array.append(self.points[i][2])
         return temp_array
 
-def initialize_components(x, y, z):
+class Point:
+    def __init__(self, x, y, z, group):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.group = group
+
+
+def initialize_components(points):
     # randomly initialize centroid values
     k = 4
     centroids = []
@@ -62,34 +71,34 @@ def initialize_components(x, y, z):
     # print(centroids)
 
     # assign each variable to the closest centroid
-    find_closest_centroid(x, y, z, centroids)
+    find_closest_centroid(points, centroids)
     # loop through each variables, find the centroid with the smallest euclidean distance
     return centroids
 
 
-def find_closest_centroid(x, y, z, centroids):
+def find_closest_centroid(points, centroids):
     # first clear up the points belonging to each centroid
     for centroid in centroids:
         centroid.clear_points()
-    for i in range(0, len(x)):
+    for i in range(0, len(points)):
         smallest_euclidean_distance = 10000
         chosen_centroid = 0
         # loop through each of the centroid's coordinates, calculate the distance
         for j in range(0, len(centroids)):
-            euclidean_distance = math.sqrt((((x[i] - centroids[j].x) ** 2) + ((y[i] - centroids[j].y) ** 2) + ((z[i] - centroids[j].z) ** 2)))
+            euclidean_distance = math.sqrt((((points[i].x - centroids[j].x) ** 2) + ((points[i].y - centroids[j].y) ** 2) + ((points[i].z - centroids[j].z) ** 2)))
             if euclidean_distance < smallest_euclidean_distance:
                 smallest_euclidean_distance = euclidean_distance
                 chosen_centroid = j
         # add this value to the centroid's cluster
         # print("Chosen centroid: " + str(chosen_centroid))
-        centroids[chosen_centroid].add_point(x[i], y[i], z[i])
+        centroids[chosen_centroid].add_point(points[i].x, points[i].y, points[i].z, points[i].group)
     return centroids
 
 
 def verify_centroids(centroids):
     # make sure that all centroids have at least one point in the cluster
     for element in centroids:
-        if len(element.get_xs()) == 0:
+        if len(element.get_xs()) <= 1:
             return False
     return True
 
@@ -102,6 +111,8 @@ def plot_final_results(centroids):
     ax.set_xlabel('"Yes" Responses')
     ax.set_ylabel('"No" Responses')
     ax.set_zlabel('"Undecided" Responses')
+    ax.set_title("K Means Clustering")
+
 
     plt.figure(figsize=(5, 5))
     for i in range(0, len(centroids)):
@@ -119,13 +130,17 @@ if __name__ == '__main__':
     y_values = group_object.final_y
     z_values = group_object.final_z
 
+    # define object array of all points
+    list_of_points = []
+    for i in range(0, len(group_object.final_data)):
+        list_of_points.append(Point(group_object.final_data[i][0], group_object.final_data[i][1], group_object.final_data[i][2], group_object.final_labels[i]))
 
     # initialize all of the elements
     keep_looping = True
     list_of_centroids = []
 
     while keep_looping:
-        list_of_centroids = initialize_components(x_values, y_values, z_values)
+        list_of_centroids = initialize_components(list_of_points)
 
         # make sure each centroid has at least one point within its cluster
         verification = verify_centroids(list_of_centroids)
@@ -133,9 +148,10 @@ if __name__ == '__main__':
         if verification:
             keep_looping = False
 
+
     finding_optimal_centroids = True
     while finding_optimal_centroids:
-        # print("new loop")
+        print("new loop")
         # log centroid results
         old_centroids = copy.deepcopy(list_of_centroids)
         # update the centroid to the mean of the cluster
@@ -143,39 +159,37 @@ if __name__ == '__main__':
             centroid.update_centroid()
 
         # check if the centroids have changed since last time
-        changed_flag = False
+        changed = False
         for i in range(0, len(old_centroids)):
+            print("OLD: \nX: " + str(old_centroids[i].x) + " Y: " + str(old_centroids[i].y) + " Z: " + str(old_centroids[i].x))
+            print("NEW: \nX: " + str(list_of_centroids[i].x) + " Y: " + str(list_of_centroids[i].y) + " Z: " + str(list_of_centroids[i].x))
             if (list_of_centroids[i].x != old_centroids[i].x) | (list_of_centroids[i].y != old_centroids[i].y) | (list_of_centroids[i].z != old_centroids[i].z):
-                changed_flag = True
+                print("It changed!")
+                changed = True
 
-        # if the centroids have not changed, stop looping through
-        if not changed_flag:
+        if changed == False:
             finding_optimal_centroids = False
 
         # recalculate which points belong to which cluster
-        list_of_centroids = find_closest_centroid(x_values, y_values, z_values, list_of_centroids)
-        # print("the # of points in the first centroid : " + str(len(list_of_centroids[1].points)))
-
-    for i in range(0, len(list_of_centroids)):
-        print(len(list_of_centroids[i].points))
-        print(list_of_centroids[i].points)
-        for j in range(0, len(list_of_centroids[i].points)):
-            # compare point against the 4 data sets, check for a match, add to tally
-            for k in range(0, len(group_object.g1_data)):
-                if list_of_centroids[i].points[j] == group_object.g1_data[k]:
-                    list_of_centroids[i].g1_matches = list_of_centroids[i].g1_matches + 1
-                if list_of_centroids[i].points[j] == group_object.g2_data[k]:
-                    list_of_centroids[i].g2_matches = list_of_centroids[i].g2_matches + 1
-                if list_of_centroids[i].points[j] == group_object.g3_data[k]:
-                    list_of_centroids[i].g3_matches = list_of_centroids[i].g3_matches + 1
-                if list_of_centroids[i].points[j] == group_object.g4_data[k]:
-                    list_of_centroids[i].g4_matches = list_of_centroids[i].g4_matches + 1
-
+    list_of_centroids = find_closest_centroid(list_of_points, list_of_centroids)
+    # print("These are the centroid's points: ")
     for centroid in list_of_centroids:
-        print(centroid.colour)
-        print("G1: " + str(centroid.g1_matches))
-        print("G2: " + str(centroid.g2_matches))
-        print("G3: " + str(centroid.g3_matches))
-        print("G4: " + str(centroid.g4_matches))
+        # print(centroid.points)
+        # count each of the groups per point
+        g1_tally = 0
+        g2_tally = 0
+        g3_tally = 0
+        g4_tally = 0
+        for i in range(0, len(centroid.points)):
+            if centroid.points[i][3] == "g1":
+                g1_tally = g1_tally + 1
+            elif centroid.points[i][3] == "g2":
+                g2_tally = g2_tally + 1
+            elif centroid.points[i][3] == "g3":
+                g3_tally = g3_tally + 1
+            elif centroid.points[i][3] == "g4":
+                g4_tally = g4_tally + 1
+        print("The total tallies:\n G1: " + str(g1_tally) + " | G2: " + str(g2_tally) + " | G3: " + str(g3_tally)  + " | G4: " + str(g4_tally))
+
     # plot the final graph
     plot_final_results(list_of_centroids)

@@ -18,8 +18,8 @@ class Center:
         self.points = []
         self.colour = colour
 
-    def add_point(self, x, y, z):
-        self.points.append([x, y, z])
+    def add_point(self, x, y, z, group):
+        self.points.append([x, y, z, group])
 
     def clear_points(self):
         self.points = []
@@ -43,7 +43,14 @@ class Center:
             temp_array.append(self.points[i][2])
         return temp_array
 
-def find_closest_centroid(x, y, z, centers):
+class Point:
+    def __init__(self, x, y, z, group):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.group = group
+
+def find_closest_centroid(points, centers):
     for center in centers:
         center.clear_points()
     for i in range(0, len(x)):
@@ -52,12 +59,12 @@ def find_closest_centroid(x, y, z, centers):
         # loop through each of the centroid's coordinates, calculate the distance
         for j in range(0, len(centers)):
             euclidean_distance = math.sqrt(
-                (((x[i] - centers[j].x) ** 2) + ((y[i] - centers[j].y) ** 2) + ((z[i] - centers[j].z) ** 2)))
+                (((points[i].x - centers[j].x) ** 2) + ((points[i].y - centers[j].y) ** 2) + ((points[i].z - centers[j].z) ** 2)))
             if euclidean_distance < smallest_euclidean_distance:
                 smallest_euclidean_distance = euclidean_distance
                 chosen_centroid = j
         # add this value to the centroid's cluster
-        centers[chosen_centroid].add_point(x[i], y[i], z[i])
+        centers[chosen_centroid].add_point(points[i].x, points[i].y, points[i].z, points[i].group)
     return
 
 
@@ -69,6 +76,11 @@ if __name__ == '__main__':
     x = group_object.final_x
     y = group_object.final_y
     z = group_object.final_z
+
+    list_of_points = []
+    for i in range(0, len(group_object.final_data)):
+        list_of_points.append(Point(group_object.final_data[i][0], group_object.final_data[i][1], group_object.final_data[i][2], group_object.final_labels[i]))
+
 
     # estimate the centers given the data
     bandwidth = estimate_bandwidth(data)
@@ -85,7 +97,7 @@ if __name__ == '__main__':
 
 
     # assign the closest points to each cluster
-    find_closest_centroid(x, y, z, cluster_objects)
+    find_closest_centroid(list_of_points, cluster_objects)
 
     for cluster in cluster_objects:
         print("Coordinates: X: " + str(cluster.x) + " Y: " + str(cluster.y) + " Z: " + str(cluster.z))
@@ -94,22 +106,33 @@ if __name__ == '__main__':
     # generate labels for clusters
     number_of_clusters = len(np.unique(ms.labels_))
 
+    for cluster in cluster_objects:
+        # print(centroid.points)
+        # count each of the groups per point
+        g1_tally = 0
+        g2_tally = 0
+        g3_tally = 0
+        g4_tally = 0
+        for i in range(0, len(cluster.points)):
+            if cluster.points[i][3] == "g1":
+                g1_tally = g1_tally + 1
+            elif cluster.points[i][3] == "g2":
+                g2_tally = g2_tally + 1
+            elif cluster.points[i][3] == "g3":
+                g3_tally = g3_tally + 1
+            elif cluster.points[i][3] == "g4":
+                g4_tally = g4_tally + 1
+        print("The total tallies:\n G1: " + str(g1_tally) + " | G2: " + str(g2_tally) + " | G3: " + str(g3_tally)  + " | G4: " + str(g4_tally))
+
+
     # configure matplotlib information
     fig = plt.figure()
     plt.clf()
     ax = fig.add_subplot(111, projection='3d')
-
-
-
-    # for point in data:
-    #     ax.scatter(point[0], point[1], point[2], marker='o')
-    # for i in range(0, len(cluster_objects)):
-    #     ax.scatter(cluster_objects[i].x, cluster_objects[i].y, cluster_objects[i].z, marker='^', color=colours[i],
-    #                linewidth=5, zorder=10)
-        # for j in range(0, len(cluster_objects[i].points)):
-        #     ax.scatter(cluster_objects[i].points[j][0], cluster_objects[i].points[j][1], cluster_objects[i].points[j][2], marker='o',
-        #                color=colours[i],
-        #                linewidth=5, zorder=10)
+    ax.set_xlabel('"Yes" Responses')
+    ax.set_ylabel('"No" Responses')
+    ax.set_zlabel('"Undecided" Responses')
+    ax.set_title("Mean Shift Clustering")
     for i in range(0, len(cluster_objects)):
         ax.scatter(cluster_objects[i].get_xs(),cluster_objects[i].get_ys(), cluster_objects[i].get_zs(), color= cluster_objects[i].colour)
         ax.scatter(cluster_objects[i].x, cluster_objects[i].y, cluster_objects[i].z, color=cluster_objects[i].colour, marker="^")
