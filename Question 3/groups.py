@@ -45,13 +45,14 @@ class Groups:
             for i in range(20):
                 for questionNum in range(self.numOfQuestions):
                     data = data = self.all_original_data[groupNum][questionNum]
-                    
+                    self.all_sample_data.append(data)
                     newData = self.createData(data)
                     add = ','.join([str(ele) for ele in newData])
                     f.write(add)
                     f.write("\n")
             f.close()
-    
+        print(self.all_sample_data)
+
     def createData(self, data):
         newData = []
         numOfZeros = 0
@@ -98,7 +99,7 @@ class Groups:
 
             while True:
                 precentage = random.randint(-5,5)/100  
-                change = -3 #int(math.floor(float(data[item_to_change]) * precentage))
+                change = int(math.floor(float(data[item_to_change]) * precentage))
                 
                 if (data[item_to_change] + change) < 100 and (data[item_to_change] + change ) > 0:
                     break
@@ -147,13 +148,7 @@ class Groups:
                         newData.append(data[item])
 
 
-        print("\n newData: " + str(newData))
+        #print("\n newData: " + str(newData))
         return newData
             
-
-
-
-
-
-#changes the item in the data to ensure it is within 0-100
             
