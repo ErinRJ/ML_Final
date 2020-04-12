@@ -126,7 +126,7 @@ def completingTestCases(finalNeuronList, hiddenNeuronList, testData, desired_out
     total_no_predicted = 0
 
     print("\n\n -----STARTING TESTING-----")
-    perceptron_num = 4
+    perceptron_num = 45
     total_correct = 0
 
     for i in range(len(testData)):
@@ -170,7 +170,7 @@ def completingTestCases(finalNeuronList, hiddenNeuronList, testData, desired_out
         print("ANSWER: " + str(max) + " is at index : " + str(maxIndex) + ", DESIRED OUTPUT: " + str(desired_output[i]))
     average = total_correct / len(testData)
 
-    print("\nThe accuracy rate: " + str(average) + "%")
+    print("\nThe accuracy rate: " + str(average*100) + "%")
     print("TRUE POSITIVE: " + str(tp))
     print("TRUE NEGATIVE: " + str(tn))
     print("FALSE POSITIVE: " + str(fp))
@@ -180,8 +180,8 @@ def completingTestCases(finalNeuronList, hiddenNeuronList, testData, desired_out
 # this is just the code from the main function - I moved it here so it's easier to run lol
 def mainCode(training, desired_training, testing, desired_testing):
     # Step 1a: create neuron objects and initialize weights and threshold (theta) to random numbers between [-0.5,0.5]
-    perceptron_num = 4
-    hidden_neuron_num = 12
+    perceptron_num = 45
+    hidden_neuron_num = 20
     final_neuron_num = 4
 
     # define lists which hold the hidden and final layers of neuron objects
@@ -220,7 +220,7 @@ def mainCode(training, desired_training, testing, desired_testing):
     for case in range(0, len(training)):
         print("======================New training scenario======================")
         numOfEpocs = 0
-        while (numOfEpocs < 10000):
+        while (numOfEpocs < 50):
 
             # loop through each of the training data
             error_sum = 0
@@ -260,4 +260,7 @@ if __name__ == '__main__':
     print("-----------------------------------------------------------")
     print(question_object.desired_training)
 
-    # mainCode(question_object.final_training_set, question_object.desired_training, question_object.final_testing_set, question_object.desired_testing)
+    print("TESTING LEN: " + str(len(question_object.final_testing_data)))
+    print("TRAINING LEN: " + str(len(question_object.final_training_data)))
+
+    mainCode(question_object.final_training_data, question_object.desired_training, question_object.final_testing_data, question_object.desired_testing)

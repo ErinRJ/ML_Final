@@ -8,7 +8,7 @@ class Groups:
         self.numOfGroups = 4
         self.numOfQuestions = 15
         self.numOfOptions = 3
-        self.numOfSamples = 20
+        self.numOfSamples = 400
 
         # obtain data from files
         self.orignalFiles = [fileNameG1, fileNameG2, fileNameG3, fileNameG4]
