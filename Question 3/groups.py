@@ -5,10 +5,12 @@ import math
 
 class Groups:
     def __init__(self, fileNameG1, fileNameG2, fileNameG3, fileNameG4):
+        print("Called the groups class")
         self.numOfGroups = 4
         self.numOfQuestions = 15
         self.numOfOptions = 3
         self.numOfSamples = 125
+
 
         # obtain data from files
         self.orignalFiles = [fileNameG1, fileNameG2, fileNameG3, fileNameG4]
@@ -102,6 +104,7 @@ class Groups:
                 else:
                     while True:
                         precentage = random.randint(-4,4)/100  
+
                         change = int(math.floor(float(data[i]) * precentage))
                 
                         if (data[i] + change) < 100 and (data[i] + change ) > 0:
@@ -126,6 +129,7 @@ class Groups:
 
             while True:
                 precentage = random.randint(-4,4)/100  
+
                 change = int(math.floor(float(data[item_to_change]) * precentage))
                 
                 if (data[item_to_change] + change) < 100 and (data[item_to_change] + change ) > 0:
@@ -195,8 +199,8 @@ class Groups:
                 # generate a random number between 0-10
                 rand_num = random.randint(0, 10)
 
-                # if it's >=5 the data will be in the testing set otherwise it will be in the training set
-                if rand_num >= 5 and num_of_testing_data_added < numOfTestingData:
+                # if it's >=2 the data will be in the testing set otherwise it will be in the training set
+                if rand_num >= 2 and num_of_testing_data_added < numOfTestingData:
                     self.testing_data.append(item)
                     num_of_testing_data_added = num_of_testing_data_added + 1
                 else:
