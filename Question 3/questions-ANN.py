@@ -252,12 +252,12 @@ def mainCode(training, desired_training, testing, desired_testing):
 if __name__ == '__main__':
     question_object = groups.Groups("G1-Sheet1.csv", "G2-Sheet1.csv", "G3-Sheet1.csv", "G4-Sheet1.csv")
 
-    #print(question_object.final_testing_set)
-    #print("-----------------------------------------------------------")
-    #print(question_object.final_training_set)
-    #print("-----------------------------------------------------------")
-    #print(question_object.desired_testing)
-    #print("-----------------------------------------------------------")
-    #print(question_object.desired_training)
+    print(question_object.final_testing_data)
+    print("-----------------------------------------------------------")
+    print(question_object.final_training_data)
+    print("-----------------------------------------------------------")
+    print(question_object.desired_testing)
+    print("-----------------------------------------------------------")
+    print(question_object.desired_training)
 
     # mainCode(question_object.final_training_set, question_object.desired_training, question_object.final_testing_set, question_object.desired_testing)

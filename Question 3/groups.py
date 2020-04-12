@@ -2,23 +2,41 @@ import random
 import math 
 
 
+
 class Groups:
     def __init__(self, fileNameG1, fileNameG2, fileNameG3, fileNameG4):
         self.numOfGroups = 4
         self.numOfQuestions = 15
         self.numOfOptions = 3
+        self.numOfSamples = 20
 
         # obtain data from files
         self.orignalFiles = [fileNameG1, fileNameG2, fileNameG3, fileNameG4]
-        
         self.all_original_data = []
 
         self.obtainData()
 
         # create sample data
         self.all_sample_data = []
+
         self.createSample()
 
+        # seperating the data into testing and training
+        self.training_data = [] 
+        self.testing_data = []
+        
+        self.seperateData()
+
+        # populating the desired lists and final lists of testing and training
+        self.desired_training = []
+        self.desired_testing = []
+        self.final_training_data = []
+        self.final_testing_data = []
+        
+        self.creatingDesiredLists("training",self.training_data)
+        self.creatingDesiredLists("testing",self.testing_data)
+
+    # obtains the data from the files and places it into one big array
     def obtainData(self):
         data_in_group = []
 
@@ -33,36 +51,44 @@ class Groups:
                     data_in_group.append(data)
             self.all_original_data.append(data_in_group)
             data_in_group = []
-        print("------------------------------Data in collected--------------------------------")
-        print(self.all_original_data)
     
-
+    # creates a the sample data based on the oringal data
     def createSample(self):
-        print("----------------------------sample created ------------------------------------")
         
         for groupNum in range(self.numOfGroups):
             f = open("sample-data/sample-data-G"+str(groupNum+1)+".csv", "w")
-            for i in range(20):
+            self.all_sample_data.append([])
+            for i in range(self.numOfSamples):
+                self.all_sample_data[groupNum].append([])
+                self.all_sample_data[groupNum][i].append("G"+str(groupNum+1))
                 for questionNum in range(self.numOfQuestions):
-                    data = data = self.all_original_data[groupNum][questionNum]
-                    self.all_sample_data.append(data)
+                    
+                    # obtaining new data and writing it to approperiate file
+                    data = self.all_original_data[groupNum][questionNum]
                     newData = self.createData(data)
                     add = ','.join([str(ele) for ele in newData])
                     f.write(add)
                     f.write("\n")
+
+                    # adding new data to all_sample_data array 
+                    
+                    for j in range (len(newData)):
+                        self.all_sample_data[groupNum][i].append(newData[j])
             f.close()
-        print(self.all_sample_data)
-
+    
+    # creates the indvidual data (i.e. the 3 elements in the array)
     def createData(self, data):
-        newData = []
-        numOfZeros = 0
-        peeps_remaining = 100
-        change = 101
+        newData = []                # new data to be returned to the createSample function
+        numOfZeros = 0              # used to count the number of zeros
+        peeps_remaining = 100       # used to count the number of people that are left to distribute among the three elements
+        change = 101                # the amount the data will increase or decrease
 
+        # counts the number of zeros
         for item in data:
             if item == 0:
                 numOfZeros = numOfZeros + 1
 
+        # if there is one zero it will increase one of the other two values and decrease the other 
         if numOfZeros == 1:    
             location = data.index(0)
 
@@ -84,15 +110,16 @@ class Groups:
                     newData.append(data[i] + change)
                     peeps_remaining = peeps_remaining - (data[i]+ change)
                 
-
+        # if there are two zeros it will return the data (everyone has the same answer)
         elif numOfZeros == 2:
             newData = data
 
+        # if are no zeros it will increase or decrease one value and then distribute the changes accordingly
         else:
             isItemSelected = False
             
 
-            # select index at random --> that value will be increased 
+            # select index at random --> that value will be increased/decreased
             item_to_change = random.randint(0,2)
             
             item_choosen = item_to_change
@@ -113,7 +140,7 @@ class Groups:
                     newData.append(dataChange)
                 
                 else:
-                    # for one
+                    # if change is one or -1
                     if change == 1 or change == -1:
                         if isItemSelected == False:
                             while item_choosen == item_to_change:
@@ -124,7 +151,8 @@ class Groups:
                             isItemSelected = True
                         else:
                             newData.append(data[item])
-                    # for odd numbers
+                    
+                    # if the change is an odd number (that's not one)
                     elif change % 2 == 1 and (change != 1 or change !=-1):
                         if isItemSelected == False:
                             if (change > 0):
@@ -142,13 +170,79 @@ class Groups:
                                 newData.append(data[item] + x2)
                             else:
                                 newData.append(data[item] - x2)
-                    # for even numbers
+                    # if the change is an even number
                     else:
                         data[item] = data[item] - int(math.floor(float(change)/2))
                         newData.append(data[item])
 
-
-        #print("\n newData: " + str(newData))
         return newData
+
+    # sperates the data into training and testing data 
+    def seperateData(self): 
+        
+        # Fining the total number of training and testing data
+        totalNumOfSamples = self.numOfGroups * self.numOfSamples
+
+        numOfTrainingData = self.numOfSamples * 0.7
+        numOfTestingData = self.numOfSamples - numOfTrainingData
+
+        num_of_training_data_added = 0
+        num_of_testing_data_added = 0
+
+        
+        for group in self.all_sample_data:
+            for item in group:
+                # generate a random number between 0-10
+                rand_num = random.randint(0, 10)
+
+                # if it's >=5 the data will be in the testing set otherwise it will be in the training set
+                if rand_num >= 5 and num_of_testing_data_added < numOfTestingData:
+                    self.testing_data.append(item)
+                    num_of_testing_data_added = num_of_testing_data_added + 1
+                else:
+                    self.training_data.append(item)
+                    num_of_training_data_added = num_of_training_data_added + 1
+            num_of_training_data_added = 0
+            num_of_testing_data_added = 0
+    
+    
+    # creates the final testing and training data and desired lists for each
+    def creatingDesiredLists(self, type, list_of_data):
+        
+        # mix the array
+        random.shuffle(list_of_data)
+        
+        # go though each element and add data to apporiate list
+        for index in range(len(list_of_data)):
+            group = list_of_data[index].pop(0)
+           
+            if group == "G1":
+                data = [1,0,0,0]
             
+            elif group == "G2":
+                data = [0,1,0,0]
             
+            elif group == "G3":
+                data = [0,0,1,0]
+            
+            else:
+                data = [0,0,0,1]
+
+            if type == 'training':
+                self.final_training_data.append(list_of_data[index])
+                self.desired_training.append(data)
+            if type == 'testing':
+                self.final_testing_data.append(list_of_data[index])
+                self.desired_testing.append(data)
+                
+            
+
+
+
+
+
+
+
+
+        
+
