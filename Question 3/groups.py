@@ -8,7 +8,7 @@ class Groups:
         self.numOfGroups = 4
         self.numOfQuestions = 15
         self.numOfOptions = 3
-        self.numOfSamples = 400
+        self.numOfSamples = 125
 
         # obtain data from files
         self.orignalFiles = [fileNameG1, fileNameG2, fileNameG3, fileNameG4]
@@ -101,7 +101,7 @@ class Groups:
                     newData.append(peeps_remaining + data[i])
                 else:
                     while True:
-                        precentage = random.randint(-5,5)/100  
+                        precentage = random.randint(-4,4)/100  
                         change = int(math.floor(float(data[i]) * precentage))
                 
                         if (data[i] + change) < 100 and (data[i] + change ) > 0:
@@ -125,7 +125,7 @@ class Groups:
             item_choosen = item_to_change
 
             while True:
-                precentage = random.randint(-5,5)/100  
+                precentage = random.randint(-4,4)/100  
                 change = int(math.floor(float(data[item_to_change]) * precentage))
                 
                 if (data[item_to_change] + change) < 100 and (data[item_to_change] + change ) > 0:
