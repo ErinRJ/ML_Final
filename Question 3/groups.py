@@ -200,7 +200,7 @@ class Groups:
                 rand_num = random.randint(0, 10)
 
                 # if it's >=2 the data will be in the testing set otherwise it will be in the training set
-                if rand_num >= 2 and num_of_testing_data_added < numOfTestingData:
+                if rand_num >= 5 and num_of_testing_data_added < numOfTestingData:
                     self.testing_data.append(item)
                     num_of_testing_data_added = num_of_testing_data_added + 1
                 else:
